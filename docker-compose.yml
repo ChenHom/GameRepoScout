@@ -1,0 +1,14 @@
+version: "3.9"
+
+services:
+  game-repo-scout:
+    build: .
+    container_name: game_repo_scout
+    # 若僅要快速跑完一次即可移除，建議用 --rm
+    # restart: "no"
+    env_file:
+      - .env            # 放置 GITHUB_TOKEN 等私密環境變數
+    volumes:
+      - ./output:/app   # 將結果 CSV 匯出到本機 ./output
+    # 若想改動參數，可覆寫 CMD
+    # command: ["python", "github_game_finder.py"]
