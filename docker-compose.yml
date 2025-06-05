@@ -1,14 +1,26 @@
-version: "3.9"
-
 services:
   game-repo-scout:
     build: .
     container_name: game_repo_scout
-    # 若僅要快速跑完一次即可移除，建議用 --rm
-    # restart: "no"
+
+    # 讀取私密環境變數（例如 GITHUB_TOKEN）
     env_file:
-      - .env            # 放置 GITHUB_TOKEN 等私密環境變數
+      - .env
+
+    # 僅對映輸出資料夾，避免覆蓋專案程式碼
     volumes:
-      - ./output:/app   # 將結果 CSV 匯出到本機 ./output
-    # 若想改動參數，可覆寫 CMD
-    # command: ["python", "github_game_finder.py"]
+      - ./output:/app/output
+
+    # 依序執行 crawler → verifier，失敗任一步即顯示錯誤碼
+    command: >-
+      sh -c "python crawler.py && python verifier.py"
+
+    # 若要在結束後自動移除容器，開啟下面這行
+    # restart: "no"
+
+    # 可選：限制記憶體 / CPU
+    # deploy:
+    #   resources:
+    #     limits:
+    #       memory: 512M
+    #       cpus: "0.5"
